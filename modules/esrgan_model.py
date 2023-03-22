@@ -188,6 +188,13 @@ class UpscalerESRGAN(Upscaler):
         in_nc, out_nc, nf, nb, plus, mscale = infer_params(state_dict)
 
         model = arch.RRDBNet(in_nc=in_nc, out_nc=out_nc, nf=nf, nb=nb, upscale=mscale, plus=plus)
+
+        try:
+            model = torch.compile(model)
+            print("Model compiled set")
+        except Exception as err:
+            print(f"Model compile not supported: {err}")
+
         model.load_state_dict(state_dict)
         model.eval()
 
