@@ -169,11 +169,11 @@ class StableDiffusionModelHijack:
         if m.cond_stage_key == "edit":
             sd_hijack_unet.hijack_ddpm_edit()
 
-        try:
-            m.model = torch.compile(m.model, mode="max-autotune", fullgraph=False)
-            print("Model compiled set")
-        except Exception as err:
-            print(f"Model compile not supported: {err}")
+        # try:
+        #     m.model = torch.compile(m.model, mode="max-autotune", fullgraph=False)
+        #     print("Model compiled set")
+        # except Exception as err:
+        #     print(f"Model compile not supported: {err}")
 
         self.optimization_method = apply_optimizations()
 
