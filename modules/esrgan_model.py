@@ -145,6 +145,7 @@ class UpscalerESRGAN(Upscaler):
 
             scaler_data = UpscalerData(name, file, self, 4)
             self.scalers.append(scaler_data)
+        self.cache_model = {}
 
     def do_upscale(self, img, selected_model):
         model = self.load_model(selected_model)
@@ -155,6 +156,9 @@ class UpscalerESRGAN(Upscaler):
         return img
 
     def load_model(self, path: str):
+        if path in self.cache_model:
+            return self.cache_model[path]
+
         if "http" in path:
             filename = load_file_from_url(url=self.model_url, model_dir=self.model_path,
                                           file_name="%s.pth" % self.model_name,
@@ -175,6 +179,11 @@ class UpscalerESRGAN(Upscaler):
             model = arch.SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=num_conv, upscale=4, act_type='prelu')
             model.load_state_dict(state_dict)
             model.eval()
+
+            model = torch.compile(model)
+            print("ESRGAN Model compiled set")
+
+            self.cache_model[path] = model
             return model
 
         if "body.0.rdb1.conv1.weight" in state_dict and "conv_first.weight" in state_dict:
@@ -192,11 +201,9 @@ class UpscalerESRGAN(Upscaler):
         model.load_state_dict(state_dict)
         model.eval()
 
-        try:
-            model = torch.compile(model)
-            print("Model compiled set")
-        except Exception as err:
-            print(f"Model compile not supported: {err}")
+        model = torch.compile(model)
+        print("ESRGAN Model compiled set")
+        self.cache_model[path] = model
 
         return model
 
