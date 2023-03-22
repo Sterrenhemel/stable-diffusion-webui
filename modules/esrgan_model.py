@@ -180,9 +180,11 @@ class UpscalerESRGAN(Upscaler):
             model.load_state_dict(state_dict)
             model.eval()
 
-            model = torch.compile(model)
-            print("ESRGAN Model compiled set")
-
+            # try:
+            #     model = torch.compile(model)
+            #     print("Model compiled set")
+            # except Exception as err:
+            #     print(f"Model compile not supported: {err}")
             self.cache_model[path] = model
             return model
 
@@ -201,8 +203,11 @@ class UpscalerESRGAN(Upscaler):
         model.load_state_dict(state_dict)
         model.eval()
 
-        model = torch.compile(model)
-        print("ESRGAN Model compiled set")
+        # try:
+        #     model = torch.compile(model)
+        #     print("Model compiled set")
+        # except Exception as err:
+        #     print(f"Model compile not supported: {err}")
         self.cache_model[path] = model
 
         return model
